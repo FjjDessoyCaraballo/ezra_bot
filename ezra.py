@@ -40,8 +40,8 @@ def theoxenia():
 		CREATE TABLE IF NOT EXISTS brl_links (
 			  id INTEGER PRIMARY KEY,
 			  link TEXT,
-			  available TEXT NOT NULL,
-			  last_fetch TEXT DEFAULT
+			  available TEXT,
+			  last_fetch TEXT
 			  )
 	''')
 	conn.commit()
@@ -58,18 +58,18 @@ def via_dolorosa(calvary) -> bool:
 	"""
 	try:
 		conn = sqlite3.connect("brlcenter.db")
-
+		# print(calvary)
 		for sorrow in calvary:
 			conn.execute('''
-					INSERT OR REPLACE INTO brl_links (
-					link
-					) VALUES ( ? )
-			''', (sorrow))
-		conn.commit()
-		conn.close()
-		return True
+				INSERT OR REPLACE INTO brl_links (
+				link
+				) VALUES ( ? )
+			''', [sorrow])
 	except Exception as e:
 		raise Exception(e)
+	conn.commit()
+	conn.close()
+	return True
 
 
 def ezra_71226(bread):
@@ -112,18 +112,44 @@ def ezra_71226(bread):
 
 	parser.feed(bread)
 	holy_scriptures = parser.get_holy_scriptures()
+	calvary = []
 	for verse in holy_scriptures:
-		calvary = web_archive + verse
+		calvary.append(web_archive + verse)
 	try:
 		via_dolorosa(calvary)
 	except Exception as e:
 		logger.error(e)
 		exit()
-	
 
 def sanctimonious_html_extraction():
 	response = requests.get(gods_domain)
 	bread = response.text
 	ezra_71226(bread)
 
-sanctimonious_html_extraction()
+def ascension():
+	"""
+	When he had led them out of the city and posted his guards without 
+	the gate, he went up on the rooftop around his own house, with a 
+	large group of his disciples with him. And when evening came, he sent 
+	all the crowds to their homes as well. Then he went back into the 
+	house and sat down in a quiet room; but he was surrounded by the 
+	eleven they had chosen. His eyes were fixed on them as he spoke: 'Go 
+	out in peace.' So the men went out and returned to their friends, 
+	telling everyone what had happened.
+	"""
+	return
+
+def main():
+	choice = input("(S)crape or (D)ownload? ")
+	if choice.lower() == "s":
+		sanctimonious_html_extraction()
+	elif choice.lower() == "d":
+		ascension()
+	else:
+		print(f"{choice}: Not a valid option")
+		logger.error("User error")
+	return
+
+
+if __name__ == "__main__":
+	main()
