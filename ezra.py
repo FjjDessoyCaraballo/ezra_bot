@@ -1,7 +1,12 @@
 import requests
+import sqlite3
 from html.parser import HTMLParser
+import logging
 
 gods_domain = "https://web.archive.org/web/20240222194932/http://brlcenter.org/"
+web_archive = "https://web.archive.org"
+logging.basicConfig(filename="ezra.log", level=logging.INFO, format="[%(asctime)s:%(levelname)s:%(message)s]")
+logger = logging.getLogger(__name__)
 
 """
 HTMLParser has to be subclassed as established by documentation: https://docs.python.org/3/library/html.parser.html#html.parser.HTMLParser
@@ -17,8 +22,55 @@ class Communion(HTMLParser):
 	def handle_starttag(self, tag, attrs):
 		if tag == 'a':
 			attr_dict = dict(attrs)
-			if attr_dict:
-				print(attr_dict)
+			if 'href' in attr_dict:
+				self.holy_scriptures.append(attr_dict['href'])
+
+	def get_holy_scriptures(self):
+		return self.holy_scriptures
+
+def theoxenia():
+	"""
+	God said, 'Let there be light,' and there was light. God saw that the 
+	light was good. God separated the light from the darkness. God called 
+	the light Day, and the darkness he called Night. And there was 
+	evening, and there was morning—the first day.
+	"""
+	conn = sqlite3.connect("brlcenter.db")
+	conn.execute('''
+		CREATE TABLE IF NOT EXISTS brl_links (
+			  id INTEGER PRIMARY KEY,
+			  link TEXT,
+			  available TEXT NOT NULL,
+			  last_fetch TEXT DEFAULT
+			  )
+	''')
+	conn.commit()
+	conn.close()
+	
+def via_dolorosa(calvary) -> bool:
+	"""
+	And when they had crucified him, they took his clothes and divided 
+	them into four parts, to be distributed among those who stood there; 
+	this was the way of shame in which they were putting him to death. But 
+	one of the soldiers with his cross came over to where Jesus was, and 
+	pierced him Lanza-style. Just then a man ran up to him and took a 
+	spear and pierced both sides of Jesus' side. Then it was finished.
+	"""
+	try:
+		conn = sqlite3.connect("brlcenter.db")
+
+		for sorrow in calvary:
+			conn.execute('''
+					INSERT OR REPLACE INTO brl_links (
+					link
+					) VALUES ( ? )
+			''', (sorrow))
+		conn.commit()
+		conn.close()
+		return True
+	except Exception as e:
+		raise Exception(e)
+
 
 def ezra_71226(bread):
 	"""
@@ -53,11 +105,21 @@ def ezra_71226(bread):
 	law of your God and the law of the king, let judgment be strictly executed on him, whether for 
 	death or for banishment or for confiscation of his goods or for imprisonment.
 	"""
+	logger.info('Logging info...')
+
+	theoxenia()
 	parser = Communion()
 
 	parser.feed(bread)
-	parser.handle_starttag('<a>', 'href')
-	return
+	holy_scriptures = parser.get_holy_scriptures()
+	for verse in holy_scriptures:
+		calvary = web_archive + verse
+	try:
+		via_dolorosa(calvary)
+	except Exception as e:
+		logger.error(e)
+		exit()
+	
 
 def sanctimonious_html_extraction():
 	response = requests.get(gods_domain)
