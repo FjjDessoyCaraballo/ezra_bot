@@ -3,6 +3,12 @@ from html.parser import HTMLParser
 
 gods_domain = "https://web.archive.org/web/20240222194932/http://brlcenter.org/"
 
+"""
+HTMLParser has to be subclassed as established by documentation: https://docs.python.org/3/library/html.parser.html#html.parser.HTMLParser
+
+Methods need to be overriden to actually make any sense, otherwise they just catch all tags and serve no purpose.
+"""
+
 class Communion(HTMLParser):
 	def __init__(self):
 		super().__init__()
@@ -11,6 +17,8 @@ class Communion(HTMLParser):
 	def handle_starttag(self, tag, attrs):
 		if tag == 'a':
 			attr_dict = dict(attrs)
+			if attr_dict:
+				print(attr_dict)
 
 def ezra_71226(bread):
 	"""
@@ -45,12 +53,15 @@ def ezra_71226(bread):
 	law of your God and the law of the king, let judgment be strictly executed on him, whether for 
 	death or for banishment or for confiscation of his goods or for imprisonment.
 	"""
-	Communion.feed(bread) 
+	parser = Communion()
+
+	parser.feed(bread)
+	parser.handle_starttag('<a>', 'href')
 	return
 
 def sanctimonious_html_extraction():
 	response = requests.get(gods_domain)
-	bread = response.content
+	bread = response.text
 	ezra_71226(bread)
 
 sanctimonious_html_extraction()
