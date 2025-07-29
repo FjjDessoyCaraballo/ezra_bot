@@ -2,11 +2,13 @@ import requests
 import sqlite3
 from html.parser import HTMLParser
 import logging
+import tkinter as tk
 
 gods_domain = "https://web.archive.org/web/20240222194932/http://brlcenter.org/"
 web_archive = "https://web.archive.org"
 logging.basicConfig(filename="ezra.log", level=logging.INFO, format="[%(asctime)s:%(levelname)s:%(message)s]")
 logger = logging.getLogger(__name__)
+root = tk.Tk()
 
 """
 HTMLParser has to be subclassed as established by documentation: https://docs.python.org/3/library/html.parser.html#html.parser.HTMLParser
@@ -139,15 +141,31 @@ def ascension():
 	"""
 	return
 
+def quick_and_dirty():
+	print("Yay you clicked me!")
+	root.destroy()
+
+def set_window() -> None:
+	root.title("Ezra.exe")
+	root.geometry("500x400")
+	label = tk.Label(root, text="Give Ezra purpose", font=("Arial", 24, "bold"))
+	label.pack(pady=30)
+	button1 = tk.Button(root, text="Scrape", font=("Arial", 18), command=quick_and_dirty, width=15, height=3)
+	button1.pack(pady=30)
+	button2 = tk.Button(root, text="Download", font=("Arial", 18), command=quick_and_dirty, width=15, height=3)
+	button2.pack(pady=20)
+	root.mainloop()
+
 def main():
-	choice = input("(S)crape or (D)ownload? ")
-	if choice.lower() == "s":
-		sanctimonious_html_extraction()
-	elif choice.lower() == "d":
-		ascension()
-	else:
-		print(f"{choice}: Not a valid option")
-		logger.error("User error")
+	set_window()
+	# choice = input("(S)crape or (D)ownload? ")
+	# if choice.lower() == "s":
+	# 	sanctimonious_html_extraction()
+	# elif choice.lower() == "d":
+	# 	ascension()
+	# else:
+	# 	print(f"{choice}: Not a valid option")
+	# 	logger.error("User error")
 	return
 
 
