@@ -123,10 +123,26 @@ def ezra_71226(bread):
 		logger.error(e)
 		exit()
 
-def sanctimonious_html_extraction():
+def exodus():
+	"""
+	So the people spake against Moses, saying, 'Who hath appointed thee a leader over us? 
+	who hath chosen thee out of all our brethren? what hast thou done here, that we should 
+	do thy work?' And Moses said unto them, 'I am servants of the Lord: for I have not 
+	forgot the words of the Lord to give you all the law which God commanded me in Horeb in 
+	the day that I came from the mount, when the Lord spake unto me: he spake unto me, 
+	saying, gather the people together unto thee, and thou shalt let them hear my words, and 
+	I will put my covenant before them, and it shall be for their testament between me and 
+	them, to prove with them; And that the people may hear, and remember, and turn from 
+	their wickedness: and ye shall not forget the poor man amongst you; for he is every 
+	where present unto thee, that thou mayest give him of all that thou hast; as will the 
+	Lord thy God bless thee in the land whither I bring thee. And shalt say unto them, the 
+	Lord thy God who brought thee out of the land of Egypt, from the house of bondage, which 
+	he kept before thee, and didst deliver thee: Thou shalt have no gods before me.
+	"""
 	response = requests.get(gods_domain)
 	bread = response.text
 	ezra_71226(bread)
+	root.destroy()
 
 def ascension():
 	"""
@@ -139,6 +155,8 @@ def ascension():
 	out in peace.' So the men went out and returned to their friends, 
 	telling everyone what had happened.
 	"""
+	print("we are in the ascension!")
+	root.destroy()
 	return
 
 def quick_and_dirty():
@@ -150,24 +168,16 @@ def set_window() -> None:
 	root.geometry("500x400")
 	label = tk.Label(root, text="Give Ezra purpose", font=("Arial", 24, "bold"))
 	label.pack(pady=30)
-	button1 = tk.Button(root, text="Scrape", font=("Arial", 18), command=quick_and_dirty, width=15, height=3)
+	button1 = tk.Button(root, text="Scrape", font=("Arial", 18), command=exodus, width=15, height=3)
 	button1.pack(pady=30)
-	button2 = tk.Button(root, text="Download", font=("Arial", 18), command=quick_and_dirty, width=15, height=3)
+	button2 = tk.Button(root, text="Download", font=("Arial", 18), command=ascension, width=15, height=3)
 	button2.pack(pady=20)
 	root.mainloop()
 
-def main():
-	set_window()
-	# choice = input("(S)crape or (D)ownload? ")
-	# if choice.lower() == "s":
-	# 	sanctimonious_html_extraction()
-	# elif choice.lower() == "d":
-	# 	ascension()
-	# else:
-	# 	print(f"{choice}: Not a valid option")
-	# 	logger.error("User error")
-	return
+# def main():
+set_window()
+	# return
 
 
-if __name__ == "__main__":
-	main()
+# if __name__ == "__main__":
+# 	main()
