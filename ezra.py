@@ -41,7 +41,7 @@ def theoxenia():
 	conn.execute('''
 		CREATE TABLE IF NOT EXISTS brl_links (
 			  id INTEGER PRIMARY KEY,
-			  link TEXT,
+			  link TEXT UNIQUE,
 			  available TEXT,
 			  last_fetch TEXT
 			  )
@@ -63,9 +63,7 @@ def via_dolorosa(calvary) -> bool:
 		# print(calvary)
 		for sorrow in calvary:
 			conn.execute('''
-				INSERT OR REPLACE INTO brl_links (
-				link
-				) VALUES ( ? )
+				INSERT OR IGNORE INTO brl_links (link) VALUES ( ? )
 			''', [sorrow])
 	except Exception as e:
 		raise Exception(e)
