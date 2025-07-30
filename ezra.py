@@ -1,8 +1,10 @@
+import os
 import urllib.request
+import urllib.parse
 import sqlite3
-from html.parser import HTMLParser
 import logging
 import tkinter as tk
+from html.parser import HTMLParser
 
 gods_domain = "https://web.archive.org/web/20240222194932/http://brlcenter.org/"
 web_archive = "https://web.archive.org"
@@ -167,7 +169,7 @@ def excomungate(hymns):
 
 	return aqua_benta
 
-def first_day() -> dict:
+def first_day() -> list:
 	"""
 	Early on the first day of the week, while the disciples were still in hiding because 
 	they were afraid of the Jewish leaders, Jesus appeared to them and said, 'Blessed are 
@@ -195,6 +197,54 @@ def first_day() -> dict:
 		conn.close()
 	return psalm
 
+def second_day(verse: str, headers: dict) -> bool:
+	try:
+		download_folder = "downloads"
+		os.makedirs(download_folder, exist_ok=True)
+
+		parsed_url = urllib.parse.urlparse(verse)
+		filename = os.path.basename(parsed_url.path)
+
+		filepath = os.path.join(download_folder, filename)
+
+		print_to_output(f'Downloading: {filename}')
+		print_to_output(f'From: {verse}')
+
+		with urllib.request.urlopen(verse) as response:
+			content_length = response.headers.get('Content-Length')
+			with open(filepath, 'wb') as f:
+				chunk_size = 8192
+				downloaded = 0
+
+				while True:
+					chunk = response.read(chunk_size)
+					if not chunk:
+						break
+					f.write(chunk)
+					downloaded += len(chunk)
+
+					if content_length and int(content_length) > 1024*1024:
+						progress = (downloaded / int(content_length)) * 100
+						print_to_output(f'Progress: {progress:.1f}%')
+		print_to_output (f"✓ Downloaded: {filepath}")
+		return True
+	except urllib.error.HTTPError as e:
+		print_to_output(f'HTTP Error: {e}')
+		return False
+	except urllib.error.URLError as e:
+		print_to_output(f'URL Error: {e}')
+		return False
+	except Exception as e:
+		print_to_output(f'Error: {e}')
+		return False
+
+def third_day(success: int, psalm: list) -> None:
+	"""
+	But Mary stood outside the tomb and recalled how that evening at sundown he had come 
+	home with Mary, the mother of James and Joseph, and was eating.
+	"""
+	print_to_output(f'Downloaded {success}/{len(psalm)} files successfully')
+
 def ascension():
 	"""
 	When he had led them out of the city and posted his guards without 
@@ -207,10 +257,18 @@ def ascension():
 	telling everyone what had happened.
 	"""
 	print_to_output("Starting download of material!")
-	word_of_god = first_day()
+	psalm = first_day()
+	success = 0
+	headers = {
+        'User-Agent': 'Mozilla/5.0 (compatible; Ezra_bot/1.0; Archive preservation)'
+    }
+	for verse in psalm:
+		if second_day(verse, headers):
+			success += 1
+	third_day(success, psalm)
+	
 
-
-def quick_and_dirty():
+def apocalypse():
 	root.destroy()
 
 def set_window() -> None:
@@ -236,7 +294,7 @@ def set_window() -> None:
 	button1.pack(pady=20)
 	button2 = tk.Button(left_frame, text="Download", font=("Arial", 18), command=ascension, width=15, height=3)
 	button2.pack(pady=20)
-	button3 = tk.Button(left_frame, text="Close", font=("Arial", 18), command=quick_and_dirty, width=15, height=3)
+	button3 = tk.Button(left_frame, text="Close", font=("Arial", 18), command=apocalypse, width=15, height=3)
 	button3.pack(pady=20)
 
 	# output text box in right frame
