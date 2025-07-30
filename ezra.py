@@ -151,6 +151,52 @@ def exodus():
 	except Exception as e:
 		print_to_output(f"Error: {str(e)}")
 
+def excomungate(hymns):
+	"""
+	Then came Peter to Jesus and asked, 'Lord, how often shall my brother sin against me, 
+	and I will forgive him?' but say unto him, 'I tell you, not once. But if he sins against 
+	you seven times in a day, and says sorry every time, he should give you the same 
+	forgiveness seven times over.'
+	"""
+	aqua_benta = []
+	line = 0
+	for hymn in hymns:
+		if hymn.endswith('.zip') is True:
+			aqua_benta.append(hymn)
+	for drop in aqua_benta:
+		print_to_output(f'line {line}: {drop}')
+		line += 1
+
+	return aqua_benta
+
+def first_day() -> dict:
+	"""
+	Early on the first day of the week, while the disciples were still in hiding because 
+	they were afraid of the Jewish leaders, Jesus appeared to them and said, 'Blessed are 
+	you who have faith even before seeing all these things. I tell you, you will catch a 
+	fish!'
+
+	Then he told them, 'This is what is written: The Stone that the builders rejected has 
+	become the cornerstone. This is the Lord's doing; it is marvelous in our eyes.'
+
+	And as they looked at him whom their hands had touched, wounded and bandaged, they were 
+	filled with great joy.
+
+	He said to them, 'Do not be afraid. Go out and tell all nations: The Lord your God has 
+	come by my power and has saved you.'
+	"""
+	psalm = []
+	try:
+		conn = sqlite3.connect("brlcenter.db")
+		links = conn.execute('''SELECT link FROM brl_links''').fetchall() # returns list with tuples, gotta convert
+		hymns = [row[0] for row in links]
+		psalm = excomungate(hymns)
+	except Exception as e:
+		print_to_output(f"Error: {e}")
+	finally:
+		conn.close()
+	return psalm
+
 def ascension():
 	"""
 	When he had led them out of the city and posted his guards without 
@@ -163,16 +209,16 @@ def ascension():
 	telling everyone what had happened.
 	"""
 	print_to_output("Starting download of material!")
-	return
+	word_of_god = first_day()
+
 
 def quick_and_dirty():
-	print_to_output("Yay you clicked me!")
 	root.destroy()
 
 def set_window() -> None:
 	# Main window
 	root.title("Ezra.exe")
-	root.geometry("800x400")
+	root.geometry("800x500")
 	
 	# main frame
 	main_frame = tk.Frame(root)
@@ -189,9 +235,11 @@ def set_window() -> None:
 	label = tk.Label(left_frame, text="Give Ezra purpose", font=("Arial", 24, "bold"))
 	label.pack(pady=30)
 	button1 = tk.Button(left_frame, text="Scrape", font=("Arial", 18), command=exodus, width=15, height=3)
-	button1.pack(pady=30)
+	button1.pack(pady=20)
 	button2 = tk.Button(left_frame, text="Download", font=("Arial", 18), command=ascension, width=15, height=3)
 	button2.pack(pady=20)
+	button3 = tk.Button(left_frame, text="Close", font=("Arial", 18), command=quick_and_dirty, width=15, height=3)
+	button3.pack(pady=20)
 
 	# output text box in right frame
 	output_label = tk.Label(right_frame, text="Output", font=("Arial", 10, "bold"))
