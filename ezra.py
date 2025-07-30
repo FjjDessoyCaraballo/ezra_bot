@@ -1,4 +1,4 @@
-import requests
+import urllib.request
 import sqlite3
 from html.parser import HTMLParser
 import logging
@@ -139,10 +139,17 @@ def exodus():
 	Lord thy God who brought thee out of the land of Egypt, from the house of bondage, which 
 	he kept before thee, and didst deliver thee: Thou shalt have no gods before me.
 	"""
-	response = requests.get(gods_domain)
-	bread = response.text
-	ezra_71226(bread)
-	root.destroy()
+	print_to_output("Salvaging material from old BRL center")
+	try:
+		with urllib.request.urlopen(gods_domain) as response:
+			print_to_output(f"Fetching: {gods_domain}")
+			print_to_output(f"Response status: {response.response.getcode()}")
+			bread = response.read().decode('utf-8')
+			print_to_output("Processing HTML content....")
+			ezra_71226(bread)
+			print_to_output("Scraping completed successfully!")
+	except Exception as e:
+		print_to_output(f"Error: {str(e)}")
 
 def ascension():
 	"""
@@ -155,29 +162,59 @@ def ascension():
 	out in peace.' So the men went out and returned to their friends, 
 	telling everyone what had happened.
 	"""
-	print("we are in the ascension!")
-	root.destroy()
+	print_to_output("Starting download of material!")
 	return
 
 def quick_and_dirty():
-	print("Yay you clicked me!")
+	print_to_output("Yay you clicked me!")
 	root.destroy()
 
 def set_window() -> None:
+	# Main window
 	root.title("Ezra.exe")
-	root.geometry("500x400")
-	label = tk.Label(root, text="Give Ezra purpose", font=("Arial", 24, "bold"))
+	root.geometry("800x400")
+	
+	# main frame
+	main_frame = tk.Frame(root)
+	main_frame.pack(fill="both", expand=True, padx=10, pady=10)
+
+	# left frame
+	left_frame = tk.Frame(main_frame)
+	left_frame.pack(side="left", fill="y", padx=(0,10))
+
+	# right frame
+	right_frame = tk.Frame(main_frame)
+	right_frame.pack(side="right", fill="both", expand=True)
+
+	label = tk.Label(left_frame, text="Give Ezra purpose", font=("Arial", 24, "bold"))
 	label.pack(pady=30)
-	button1 = tk.Button(root, text="Scrape", font=("Arial", 18), command=exodus, width=15, height=3)
+	button1 = tk.Button(left_frame, text="Scrape", font=("Arial", 18), command=exodus, width=15, height=3)
 	button1.pack(pady=30)
-	button2 = tk.Button(root, text="Download", font=("Arial", 18), command=ascension, width=15, height=3)
+	button2 = tk.Button(left_frame, text="Download", font=("Arial", 18), command=ascension, width=15, height=3)
 	button2.pack(pady=20)
+
+	# output text box in right frame
+	output_label = tk.Label(right_frame, text="Output", font=("Arial", 10, "bold"))
+	output_label.pack(anchor="w")
+
+	text_frame = tk.Frame(right_frame)
+	text_frame.pack(fill="both", expand=True)
+
+	global output_text
+	output_text = tk.Text(text_frame, wrap="word", font=("courier", 10))
+	scrollbar = tk.Scrollbar(text_frame, orient="vertical", command=output_text.yview)
+	output_text.configure(yscrollcommand=scrollbar.set)
+
+	output_text.pack(side="left", fill="both", expand=True)
+	scrollbar.pack(side="right", fill="y")
+
 	root.mainloop()
 
-# def main():
+
+def print_to_output(message):
+	if 'output_text' in globals():
+		output_text.insert("end", message + '\n')
+		output_text.see("end")
+		root.update_idletasks()
+
 set_window()
-	# return
-
-
-# if __name__ == "__main__":
-# 	main()

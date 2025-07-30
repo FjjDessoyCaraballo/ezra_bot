@@ -6,3 +6,14 @@ Webscrapper application exclusively to retrieve `.zip` files from and old and in
 
 ## Usage
 
+Ezra does not use external dependencies. As long as you have `Python 3.12.3` you are good to go. Check you python version like this:
+
+```bash
+python3 --version
+```
+
+If you have the necessary version, then just run the following command:
+
+```bash
+python3 ezra.py
+```
