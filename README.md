@@ -20,3 +20,8 @@ If you have the necessary version, then just run the following command:
 python3 ezra.py
 ```
 
+If you are not even comfortable using terminal, you can use the executable `run_ezra`. It's effectively the same thing as running the script in terminal.
+
+## Constraints
+
+Ezra is very dedicated and can't be closed while downloading files. Be patient.
