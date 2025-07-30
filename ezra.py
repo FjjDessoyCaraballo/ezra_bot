@@ -149,6 +149,7 @@ def exodus():
 			ezra_71226(bread)
 			print_to_output("Scraping completed successfully!")
 	except Exception as e:
+		logger.error(f'Error: {e}')
 		print_to_output(f"Error: {str(e)}")
 
 def excomungate(hymns):
@@ -192,6 +193,7 @@ def first_day() -> list:
 		hymns = [row[0] for row in links]
 		psalm = excomungate(hymns)
 	except Exception as e:
+		logger.error(f'Error: {e}')
 		print_to_output(f"Error: {e}")
 	finally:
 		conn.close()
@@ -229,12 +231,15 @@ def second_day(verse: str, headers: dict) -> bool:
 		print_to_output (f"✓ Downloaded: {filepath}")
 		return True
 	except urllib.error.HTTPError as e:
+		logger.error(f'HTTP Error: {e}')
 		print_to_output(f'HTTP Error: {e}')
 		return False
 	except urllib.error.URLError as e:
+		logger.error(f'URL Error: {e}')
 		print_to_output(f'URL Error: {e}')
 		return False
 	except Exception as e:
+		logger.error(f'Error: {e}')
 		print_to_output(f'Error: {e}')
 		return False
 
