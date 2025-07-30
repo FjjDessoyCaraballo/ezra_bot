@@ -143,7 +143,7 @@ def exodus():
 	try:
 		with urllib.request.urlopen(gods_domain) as response:
 			print_to_output(f"Fetching: {gods_domain}")
-			print_to_output(f"Response status: {response.response.getcode()}")
+			print_to_output(f"Response status: {response.getcode()}")
 			bread = response.read().decode('utf-8')
 			print_to_output("Processing HTML content....")
 			ezra_71226(bread)
