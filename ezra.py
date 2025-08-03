@@ -3,6 +3,7 @@ import urllib.request
 import urllib.parse
 import sqlite3
 import logging
+import time
 import tkinter as tk
 from html.parser import HTMLParser
 
@@ -269,6 +270,7 @@ def ascension():
     }
 	for verse in psalm:
 		if second_day(verse, headers):
+			time.sleep(4)
 			success += 1
 	third_day(success, psalm)
 	
