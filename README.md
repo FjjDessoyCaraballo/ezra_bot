@@ -8,7 +8,14 @@ Webscrapper application exclusively to retrieve `.zip` files from and old and in
 
 Ezra contains its own Guided User Interface (GUI) that is quite user-friendly, and displays actions onto the GUI.
 
-Ezra does not use external dependencies. As long as you have `Python 3.12.3` you are good to go. Check you python version like this:
+Ezra does not use external dependencies. However, for older Ubuntu version, you may need to install Tkinter for the GUI:
+
+```bash
+sudo apt install python3-tk
+```
+
+
+As long as you have `Python 3.12.3` you are good to go. Check you python version like this:
 
 ```bash
 python3 --version
