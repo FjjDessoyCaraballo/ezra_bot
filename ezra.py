@@ -112,12 +112,16 @@ def ezra_71226(bread):
 
 	theoxenia()
 	parser = Communion()
+	direct_download = "id_"
 
 	parser.feed(bread)
 	holy_scriptures = parser.get_holy_scriptures()
 	calvary = []
 	for verse in holy_scriptures:
-		calvary.append(web_archive + verse)
+		first_http = verse.find("http") - 1
+		new_verse = verse[:first_http] + direct_download + verse[first_http:]
+		print_to_output(web_archive + new_verse)
+		calvary.append(web_archive + new_verse)
 	try:
 		via_dolorosa(calvary)
 	except Exception as e:
@@ -207,41 +211,95 @@ def second_day(verse: str, headers: dict) -> bool:
 
 		parsed_url = urllib.parse.urlparse(verse)
 		filename = os.path.basename(parsed_url.path)
+		
+		if not filename or not filename.endswith('.zip'):
+			filename = f"archive_file_{int(time.time())}.zip"
 
 		filepath = os.path.join(download_folder, filename)
+		
+		if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
+			print_to_output(f"File already exists: {filename}")
+			return True
 
 		print_to_output(f'Downloading: {filename}')
 		print_to_output(f'From: {verse}')
 
-		with urllib.request.urlopen(verse) as response:
+		request = urllib.request.Request(verse, headers=headers)
+		
+		with urllib.request.urlopen(request) as response:
 			content_length = response.headers.get('Content-Length')
+			content_type = response.headers.get('Content-Type', '')
+			
+			print_to_output(f"Content-Type: {content_type}")
+			
+			if content_length:
+				size_mb = int(content_length) / (1024 * 1024)
+				size_gb = size_mb / 1024
+				if size_gb >= 1:
+					print_to_output(f"File size: {size_gb:.2f} GB")
+				else:
+					print_to_output(f"File size: {size_mb:.2f} MB")
+			else:
+				print_to_output("File size: Unknown")
+			
+			chunk_size = 1024 * 1024
+			downloaded = 0
+			last_progress_report = 0
+			
 			with open(filepath, 'wb') as f:
-				chunk_size = 8192
-				downloaded = 0
-
 				while True:
 					chunk = response.read(chunk_size)
 					if not chunk:
 						break
 					f.write(chunk)
 					downloaded += len(chunk)
-
-					if content_length and int(content_length) > 1024*1024:
+					
+					if content_length:
 						progress = (downloaded / int(content_length)) * 100
-						print_to_output(f'Progress: {progress:.1f}%')
-		print_to_output (f"✓ Downloaded: {filepath}")
+						
+						mb_downloaded = downloaded / (1024 * 1024)
+						
+						if (progress - last_progress_report >= 5.0) or (mb_downloaded % 50 == 0 and mb_downloaded > 0):
+							if size_gb >= 1:
+								gb_downloaded = downloaded / (1024 * 1024 * 1024)
+								print_to_output(f'Progress: {progress:.1f}% ({gb_downloaded:.2f} GB downloaded)')
+							else:
+								print_to_output(f'Progress: {progress:.1f}% ({mb_downloaded:.1f} MB downloaded)')
+							last_progress_report = progress
+							root.update_idletasks()
+		
+		final_size = os.path.getsize(filepath)
+		final_mb = final_size / (1024 * 1024)
+		final_gb = final_mb / 1024
+		
+		# for integrity
+		if final_gb >= 1:
+			print_to_output(f"✓ Downloaded: {filepath} ({final_gb:.2f} GB)")
+		else:
+			print_to_output(f"✓ Downloaded: {filepath} ({final_mb:.1f} MB)")
+		
+		if content_length:
+			expected_size = int(content_length)
+			if final_size != expected_size:
+				print_to_output(f"⚠️  Size mismatch! Expected: {expected_size:,}, Got: {final_size:,}")
+				print_to_output("File may be corrupted - consider re-downloading")
+				return False
+			else:
+				print_to_output("✓ File size verified - download complete")
+				
 		return True
+		
 	except urllib.error.HTTPError as e:
 		logger.error(f'HTTP Error: {e}')
-		print_to_output(f'HTTP Error: {e}')
+		print_to_output(f'HTTP Error {e.code}: {e.reason}')
 		return False
 	except urllib.error.URLError as e:
 		logger.error(f'URL Error: {e}')
-		print_to_output(f'URL Error: {e}')
+		print_to_output(f'URL Error: {e.reason}')
 		return False
 	except Exception as e:
-		logger.error(f'Error: {e}')
-		print_to_output(f'Error: {e}')
+		logger.error(f'Error downloading {verse}: {e}')
+		print_to_output(f'Download failed: {e}')
 		return False
 
 def third_day(success: int, psalm: list) -> None:
@@ -266,11 +324,23 @@ def ascension():
 	psalm = first_day()
 	success = 0
 	headers = {
-        'User-Agent': 'Mozilla/5.0 (compatible; Ezra_bot/1.0; Archive preservation)'
-    }
+		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+		'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+		'Accept-Language': 'en-US,en;q=0.9',
+		'Accept-Encoding': 'gzip, deflate, br',
+		'DNT': '1',
+		'Connection': 'keep-alive',
+		'Upgrade-Insecure-Requests': '1',
+		'Sec-Fetch-Dest': 'document',
+		'Sec-Fetch-Mode': 'navigate',
+		'Sec-Fetch-Site': 'none',
+		'Sec-Fetch-User': '?1',
+		'Cache-Control': 'max-age=0'
+	}
 	for verse in psalm:
+		print_to_output(verse)
 		if second_day(verse, headers):
-			time.sleep(4)
+			time.sleep(15)
 			success += 1
 	third_day(success, psalm)
 	
@@ -281,7 +351,7 @@ def apocalypse():
 def set_window() -> None:
 	# Main window
 	root.title("Ezra.exe")
-	root.geometry("800x500")
+	root.geometry("1600x500")
 	
 	# main frame
 	main_frame = tk.Frame(root)
