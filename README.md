@@ -149,19 +149,19 @@ CREATE TABLE brl_links (
 );
 ```
 
-## ⚠️ Important Constraints
+> [!CAUTION]
+> Operational Limitations
+> - **No Interruption**: Ezra cannot be safely closed during active downloads
+> - **Sequential Processing**: Downloads are processed one at a time to respect server limits
+> - **Network Dependent**: Requires stable internet connection for optimal performance
 
-### Operational Limitations
-- **No Interruption**: Ezra cannot be safely closed during active downloads
-- **Sequential Processing**: Downloads are processed one at a time to respect server limits
-- **Network Dependent**: Requires stable internet connection for optimal performance
+> [!IMPORTANT]
+> Resource Considerations
+> - **Storage Space**: Ensure adequate disk space for downloaded archives
+> - **Download Time**: Large files may take considerable time depending on connection speed
+> - **Rate Limiting**: Built-in 15-second delays between downloads to respect Internet Archive
 
-### Resource Considerations
-- **Storage Space**: Ensure adequate disk space for downloaded archives
-- **Download Time**: Large files may take considerable time depending on connection speed
-- **Rate Limiting**: Built-in 15-second delays between downloads to respect Internet Archive
-
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -190,7 +190,7 @@ sudo dnf install python3-tkinter
 - Ensure write permissions in the application directory
 - Delete `brlcenter.db` to reset (will require re-scraping)
 
-## 📊 Performance Expectations
+## Performance Expectations
 
 ### Typical Metrics
 - **Scraping Phase**: 30-60 seconds depending on archive response time
@@ -198,7 +198,7 @@ sudo dnf install python3-tkinter
 - **File Sizes**: Range from several MB to multiple GB per archive
 - **Total Download Time**: Can range from hours to days for complete collection
 
-## 🤝 Contributing
+## Contributing
 
 ### Development Setup
 1. Fork the repository
